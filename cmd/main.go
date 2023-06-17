@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	handler := new(handler.Handler{})
+	handlers := new(handler.Handler)
 	webSrv := new(webServer.Server)
-	if err := webSrv.Run("8000"); err != nil {
+	if err := webSrv.Run("8000", handlers.InitRoutes()); err != nil {
 		log.Fatalf("error running web server: %s", err.Error())
 	}
 }
