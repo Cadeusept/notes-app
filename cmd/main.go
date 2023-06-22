@@ -1,27 +1,27 @@
 package main
 
 import (
-	"log"
 	"os"
-
-	_ "github.com/lib/pq"
 
 	webServer "github.com/Cadeusept/notes-app"
 	"github.com/Cadeusept/notes-app/pkg/handler"
 	"github.com/Cadeusept/notes-app/pkg/repository"
 	"github.com/Cadeusept/notes-app/pkg/service"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := initConfig(); err != nil {
-		log.Fatalf("error initializing configs: %s", err.Error())
+		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
 
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatalf("error loading .env file: %s", err.Error())
+	if err := godotenv.Load("../.env"); err != nil {
+		logrus.Fatalf("error loading .env file: %s", err.Error())
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
@@ -34,7 +34,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatalf("error connecting to database: %s", err.Error())
+		logrus.Fatalf("error connecting to database: %s", err.Error())
 	}
 
 	repos := repository.NewRepository(db)
@@ -43,7 +43,7 @@ func main() {
 
 	webSrv := new(webServer.Server)
 	if err := webSrv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error running web server: %s", err.Error())
+		logrus.Fatalf("error running web server: %s", err.Error())
 	}
 }
 

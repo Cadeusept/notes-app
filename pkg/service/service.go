@@ -1,8 +1,12 @@
 package service
 
-import "github.com/Cadeusept/notes-app/pkg/repository"
+import (
+	"github.com/Cadeusept/notes-app"
+	"github.com/Cadeusept/notes-app/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user notes.User) (int, error)
 }
 
 type NoteList interface {
@@ -18,5 +22,7 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }
