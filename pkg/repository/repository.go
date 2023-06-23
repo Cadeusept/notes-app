@@ -14,6 +14,8 @@ type NoteList interface {
 	Create(userId int, list notes.NoteList) (int, error)
 	GetAll(userId int) ([]notes.NoteList, error)
 	GetById(userId, listId int) (notes.NoteList, error)
+	Delete(userId, listId int) error
+	Update(userId, listId int, input notes.UpdateListInput) error
 }
 
 type NoteItem interface {

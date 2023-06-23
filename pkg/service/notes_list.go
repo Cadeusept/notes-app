@@ -24,3 +24,14 @@ func (s *NotesListService) GetAll(userId int) ([]notes.NoteList, error) {
 func (s *NotesListService) GetById(userId, listId int) (notes.NoteList, error) {
 	return s.repo.GetById(userId, listId)
 }
+
+func (s *NotesListService) Delete(userId, listId int) error {
+	return s.repo.Delete(userId, listId)
+}
+
+func (s *NotesListService) Update(userId, listId int, input notes.UpdateListInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	return s.repo.Update(userId, listId, input)
+}

@@ -76,10 +76,56 @@ func (h *Handler) getListById(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
-func (h *Handler) updateList(*gin.Context) {
+func (h *Handler) updateList(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	list_id, err := strconv.Atoi(c.Param("list_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid list id")
+		return
+	}
+
+	var input notes.UpdateListInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.NoteList.Update(user_id, list_id, input)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
 
-func (h *Handler) deleteList(*gin.Context) {
+func (h *Handler) deleteList(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	list_id, err := strconv.Atoi(c.Param("list_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid list id")
+		return
+	}
+
+	err = h.services.NoteList.Delete(user_id, list_id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
