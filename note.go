@@ -14,9 +14,9 @@ type UsersList struct {
 }
 
 type NoteItem struct {
-	Id    int    `json:"id"`
-	Title string `json:"title"`
-	Body  string `json:"body"`
+	Id    int    `json:"id" db:"id"`
+	Title string `json:"title" db:"title"`
+	Body  string `json:"body" db:"body" binding:"required"`
 }
 
 type ListsItem struct {

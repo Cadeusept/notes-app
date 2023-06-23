@@ -32,7 +32,7 @@ CREATE TABLE notes_items
 
 CREATE TABLE lists_items
 (
-    id_list int references users (id) on delete cascade not null,
-    id_item int references users (id) on delete cascade not null,
+    id_list int references notes_lists (id) on delete cascade not null,
+    id_item int references notes_items (id) on delete cascade not null,
     Primary key (id_list, id_item)
 );

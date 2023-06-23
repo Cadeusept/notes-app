@@ -20,6 +20,8 @@ type NoteList interface {
 }
 
 type NoteItem interface {
+	Create(userId, listId int, input notes.NoteItem) (int, error)
+	GetAll(userId, listId int) ([]notes.NoteItem, error)
 }
 
 type Service struct {
@@ -32,5 +34,6 @@ func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		NoteList:      NewNotesListService(repos.NoteList),
+		NoteItem:      NewNotesItemService(repos.NoteItem, repos.NoteList),
 	}
 }
