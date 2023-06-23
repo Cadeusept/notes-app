@@ -8,6 +8,7 @@ import (
 type Authorization interface {
 	CreateUser(user notes.User) (int, error)
 	GenerateToken(login, password string) (string, error)
+	ParseToken(accessToken string) (int, error)
 }
 
 type NoteList interface {
