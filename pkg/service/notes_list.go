@@ -16,3 +16,11 @@ func NewNotesListService(repo repository.NoteList) *NotesListService {
 func (s *NotesListService) Create(userId int, list notes.NoteList) (int, error) {
 	return s.repo.Create(userId, list)
 }
+
+func (s *NotesListService) GetAll(userId int) ([]notes.NoteList, error) {
+	return s.repo.GetAll(userId)
+}
+
+func (s *NotesListService) GetById(userId, listId int) (notes.NoteList, error) {
+	return s.repo.GetById(userId, listId)
+}

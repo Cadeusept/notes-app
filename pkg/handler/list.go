@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Cadeusept/notes-app"
 	"github.com/gin-gonic/gin"
@@ -31,12 +32,48 @@ func (h *Handler) createList(c *gin.Context) {
 	})
 }
 
-func (h *Handler) getAllLists(*gin.Context) {
-
+type getAllListsResponse struct {
+	Data []notes.NoteList `json:"data"`
 }
 
-func (h *Handler) getListById(*gin.Context) {
+func (h *Handler) getAllLists(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	lists, err := h.services.NoteList.GetAll(user_id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
+}
+
+func (h *Handler) getListById(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	list_id, err := strconv.Atoi(c.Param("list_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid list id")
+		return
+	}
+
+	list, err := h.services.NoteList.GetById(user_id, list_id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, list)
 }
 
 func (h *Handler) updateList(*gin.Context) {

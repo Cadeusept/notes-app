@@ -13,6 +13,8 @@ type Authorization interface {
 
 type NoteList interface {
 	Create(userId int, list notes.NoteList) (int, error)
+	GetAll(userId int) ([]notes.NoteList, error)
+	GetById(userId, listId int) (notes.NoteList, error)
 }
 
 type NoteItem interface {
