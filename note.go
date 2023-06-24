@@ -1,9 +1,11 @@
 package notes
 
+import "errors"
+
 type NoteList struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Id          int    `json:"id" db:"id"`
+	Title       string `json:"title" db:"title" binding:"required"`
+	Description string `json:"description" db:"description"`
 }
 
 type UsersList struct {
@@ -12,12 +14,38 @@ type UsersList struct {
 }
 
 type NoteItem struct {
-	Id    int    `json:"id"`
-	Title string `json:"title"`
-	Body  string `json:"body"`
+	Id    int    `json:"id" db:"id"`
+	Title string `json:"title" db:"title"`
+	Body  string `json:"body" db:"body" binding:"required"`
 }
 
 type ListsItem struct {
 	IdList int `json:"id_list"`
 	IdItem int `json:"id_item"`
+}
+
+type UpdateListInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+}
+
+func (i UpdateListInput) Validate() error {
+	if i.Title == nil && i.Description == nil {
+		return errors.New("update structure has no values")
+	}
+
+	return nil
+}
+
+type UpdateItemInput struct {
+	Title *string `json:"title"`
+	Body  *string `json:"body"`
+}
+
+func (i UpdateItemInput) Validate() error {
+	if i.Title == nil && i.Body == nil {
+		return errors.New("update structure has no values")
+	}
+
+	return nil
 }
