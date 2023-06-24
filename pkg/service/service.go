@@ -24,6 +24,7 @@ type NoteItem interface {
 	GetAll(userId, listId int) ([]notes.NoteItem, error)
 	GetById(userId, itemId int) (notes.NoteItem, error)
 	Delete(userId, itemId int) error
+	Update(userId, itemId int, input notes.UpdateItemInput) error
 }
 
 type Service struct {

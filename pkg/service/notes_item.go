@@ -31,6 +31,14 @@ func (s *NotesItemService) GetById(userId, itemId int) (notes.NoteItem, error) {
 	return s.repo.GetById(userId, itemId)
 }
 
+func (s *NotesItemService) Update(userId, itemId int, input notes.UpdateItemInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+
+	return s.repo.Update(userId, itemId, input)
+}
+
 func (s *NotesItemService) Delete(userId, itemId int) error {
 	return s.repo.Delete(userId, itemId)
 }

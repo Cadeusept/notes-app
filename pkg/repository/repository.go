@@ -22,6 +22,7 @@ type NoteItem interface {
 	Create(listId int, input notes.NoteItem) (int, error)
 	GetAll(userId, listId int) ([]notes.NoteItem, error)
 	GetById(userId, itemId int) (notes.NoteItem, error)
+	Update(userId, itemId int, input notes.UpdateItemInput) error
 	Delete(userId, itemId int) error
 }
 
