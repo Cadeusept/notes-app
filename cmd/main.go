@@ -1,7 +1,11 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	webServer "github.com/Cadeusept/notes-app"
 	"github.com/Cadeusept/notes-app/pkg/handler"
@@ -42,9 +46,28 @@ func main() {
 	handlers := handler.NewHandler(services)
 
 	webSrv := new(webServer.Server)
-	if err := webSrv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("error running web server: %s", err.Error())
+	go func() {
+		if err := webSrv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil && err != http.ErrServerClosed {
+			logrus.Fatalf("error running web server: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("Notes app started")
+
+	c_quit := make(chan os.Signal, 1)
+	signal.Notify(c_quit, syscall.SIGTERM, syscall.SIGINT)
+	sig := <-c_quit
+
+	logrus.Printf("catched signal: %s. Notes app shutting down...", sig.String())
+
+	if err := webSrv.Shutdown(context.Background()); err != nil {
+		logrus.Errorf("error occured during shutdown: %s", err.Error())
 	}
+	if err := db.Close(); err != nil {
+		logrus.Errorf("error occured during database connection closure: %s", err.Error())
+	}
+
+	logrus.Print("Notes app shut down successfully")
 }
 
 func initConfig() error {
