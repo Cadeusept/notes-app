@@ -52,3 +52,22 @@ func (r *NotesItemPostgres) GetAll(userId, listId int) ([]notes.NoteItem, error)
 
 	return items, nil
 }
+
+func (r *NotesItemPostgres) GetById(userId, itemId int) (notes.NoteItem, error) {
+	var item notes.NoteItem
+	query := fmt.Sprintf("SELECT ti.id, ti.title, ti.body FROM %s ti INNER JOIN %s li ON li.id_item=ti.id INNER JOIN %s ul ON ul.id_list=li.id_list WHERE ti.id=$1 AND ul.id_user=$2",
+		itemsTable, listsItemsTable, usersListsTable)
+	if err := r.db.Get(&item, query, itemId, userId); err != nil {
+		return item, err
+	}
+
+	return item, nil
+}
+
+func (r *NotesItemPostgres) Delete(userId, itemId int) error {
+	query := fmt.Sprintf("DELETE FROM %s ti using %s li, %s ul WHERE ti.id=li.id_item AND li.id_list=ul.id_list AND ul.id_user=$1 AND ti.id=$2",
+		itemsTable, listsItemsTable, usersListsTable)
+	_, err := r.db.Exec(query, userId, itemId)
+
+	return err
+}

@@ -21,6 +21,8 @@ type NoteList interface {
 type NoteItem interface {
 	Create(listId int, input notes.NoteItem) (int, error)
 	GetAll(userId, listId int) ([]notes.NoteItem, error)
+	GetById(userId, itemId int) (notes.NoteItem, error)
+	Delete(userId, itemId int) error
 }
 
 type Repository struct {

@@ -66,14 +66,52 @@ func (h *Handler) getAllItems(c *gin.Context) {
 	})
 }
 
-func (h *Handler) getItemById(*gin.Context) {
+func (h *Handler) getItemById(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	item_id, err := strconv.Atoi(c.Param("item_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid item id")
+		return
+	}
+
+	item, err := h.services.NoteItem.GetById(user_id, item_id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, item)
+}
+
+func (h *Handler) updateItem(c *gin.Context) {
 
 }
 
-func (h *Handler) updateItem(*gin.Context) {
+func (h *Handler) deleteItem(c *gin.Context) {
+	user_id, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-}
+	item_id, err := strconv.Atoi(c.Param("item_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid item id")
+		return
+	}
 
-func (h *Handler) deleteItem(*gin.Context) {
+	err = h.services.NoteItem.Delete(user_id, item_id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
